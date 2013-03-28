@@ -5,12 +5,12 @@
 #ifndef BALL_VIEW_RENDERING_RENDERERS_XML3DRENDERER_H
 #define BALL_VIEW_RENDERING_RENDERERS_XML3DRENDERER_H
 
-#ifndef BALL_VIEW_RENDERING_RENDERERS_RENDERER_H
-# include <BALL/VIEW/RENDERING/RENDERERS/renderer.h>
+#ifndef BALL_VIEW_RENDERING_GEOMETRICOBJECTDISPATCHER_H
+# include <BALL/VIEW/RENDERING/geometricObjectDispatcher.h>
 #endif
 
-#ifndef BALL_SYSTEM_FILE_H
-# include <BALL/SYSTEM/file.h>
+#ifndef BALL_VIEW_RENDERING_SCENEEXPORTER_H
+# include <BALL/VIEW/RENDERING/sceneExporter.h>
 #endif
 
 #ifndef BALL_MATHS_VECTOR3_H
@@ -25,10 +25,15 @@
 # include <BALL/MATHS/surface.h>
 #endif
 
+#ifndef BALL_VIEW_KERNEL_STAGE_H
+# include <BALL/VIEW/KERNEL/stage.h>
+#endif
+
 namespace BALL
 {
 	namespace VIEW
 	{
+		class Scene;
 		class ColorRGBA;
 		class ClippingPlane;
 
@@ -37,14 +42,10 @@ namespace BALL
 				and exports them into a data file in the XML3DRay 1.5 format, which can
 				be used to render the same scene externally.
 				\ingroup ViewRendering
-
-			@deprecated Incompatible with recent XML3D versions
 		*/
-		class BALL_DEPRECATED BALL_VIEW_EXPORT XML3DRenderer : public Renderer
+		class BALL_DEPRECATED BALL_VIEW_EXPORT XML3DRenderer : public SceneExporter, public GeometricObjectDispatcher
 		{
 			public:
-
-			BALL_CREATE(XML3DRenderer)
 
 			struct XML3DRendererClippingPlane
 			{
@@ -58,20 +59,12 @@ namespace BALL
 			 */
 			//@{
 
-			/// Default constructor.
-			XML3DRenderer();
-
 			/** Detailed constructor.
 			 		\param name The name of the file we will create
-			 		\exception BALL::Exception::FileNotFound
 			 */
 			XML3DRenderer(const String& name);
 			
-			XML3DRenderer(std::ostream& name);
-			
-			// Only for Python
-			XML3DRenderer(const XML3DRenderer& renderer);
-
+			XML3DRenderer(std::ostream* name);
 
 			/// Destructor.
 			virtual ~XML3DRenderer();
@@ -86,23 +79,6 @@ namespace BALL
 
 			virtual void setSize(float width, float height);
 
-			/** Sets the name of the file we will create.
-			 		\param name The file name
-			 		\exception BALL::Exception::FileNotFound
-			 */
-			void setFileName(const String& name);
-
-			/// Set a stream as output device
-			void setOstream(std::ostream& out_stream);
-
-			/// 
-			void setHumanReadable(bool state)
-				{ human_readable_ = state;}
-
-			///
-			bool isHumanReadable() const
-				{ return human_readable_;}
-
 			/** Converts a ColorRGBA into a String in XML3D format.
 			 */
 			String XML3DColorRGBA(const ColorRGBA& input, const String& name);
@@ -113,7 +89,7 @@ namespace BALL
 
 			/** Converts an Material into the corresponding shader properties.
 			 */
-			String XML3DRaytracingMaterial(const Stage::Material& /* input */);
+			String XML3DRaytracingMaterial(const Stage::Material& input);
 
 			/** Converts a Vector3 into a String in XML3DRay format.
 			 */
@@ -123,7 +99,7 @@ namespace BALL
 			 */
 			String XML3DString(const String& input);
 
-			virtual bool renderOneRepresentation(const Representation& representation);
+			virtual bool exportOneRepresentation(const Representation* representation);
 
 			//@}
 			
@@ -131,19 +107,17 @@ namespace BALL
 			 */
 			//@{
 
-			/** Initialization routine.
-			*/
-			virtual bool init(Scene& scene);
-
 			/** Start method. 
 			    This method creates the file and writes the header.
 			 */
-			virtual bool init(const Stage& stage, float width, float height);
+			virtual bool init(const Stage* stage, float width, float height);
 
+		protected:
 			/** Finish method.
 			 		This method writes the ending of the file and closes it.
 			 */
-			virtual bool finish();
+			bool finishImpl_();
+
 			
 			void createXHTMLHeader();
 
@@ -151,19 +125,19 @@ namespace BALL
 
 			void renderSphere_(const Sphere& sphere);
 			
-			void renderDisc_(const Disc& /* disc */);
+			void renderDisc_(const Disc& disc);
 
-			void renderTube_(const Tube& /* tube */);
+			void renderTube_(const Tube& tube);
 
 			void renderTwoColoredTube_(const TwoColoredTube& tube);
 
 			void renderMesh_(const Mesh& mesh);
 
-			void renderTwoColoredLine_(const TwoColoredLine& /* line */);
+			void renderTwoColoredLine_(const TwoColoredLine& line);
 
-			void renderLine_(const Line& /* line */);
+			void renderLine_(const Line& line);
 
-			void renderPoint_(const Point& /* point */);
+			void renderPoint_(const Point& point);
 
 			// do nothing
 			void renderLabel_(const Label&);
@@ -173,11 +147,8 @@ namespace BALL
 
 			//@}
 
-			protected:
-
 				const ColorRGBA& getColor_(const GeometricObject& object);
 			
-				std::ostream* outfile_;
 				String trimFloatValue_(float value);
 				void storeColor_(const GeometricObject& object);
 				String getColorIndex_(const ColorRGBA& color);
@@ -209,6 +180,7 @@ namespace BALL
 
 				float fov_x_;
 				float fov_y_;
+				const Stage* stage_;
 		};
   
 	} // namespace BALL
