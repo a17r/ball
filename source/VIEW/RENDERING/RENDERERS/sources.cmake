@@ -5,7 +5,6 @@ SET(SOURCES_LIST
 	STLRenderer.C
 	tilingRenderer.C
 	VRMLRenderer.C
-	XML3DRenderer.C
-)
+        )
 
 ADD_VIEW_SOURCES("VIEW/RENDERING/RENDERERS" "${SOURCES_LIST}")

@@ -15,11 +15,6 @@
 #include <QtTest/QTest>
 #include <QtTest/QSpontaneKeyEvent>
 
-#ifdef BALL_PYTHON_SUPPORT
- #include <BALL/VIEW/WIDGETS/pyWidget.h>
- #include <BALL/PYTHON/pyInterpreter.h>
-#endif
-
 namespace BALL
 {
 	namespace VIEW

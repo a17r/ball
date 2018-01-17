@@ -14,7 +14,6 @@ SET(SOURCES_LIST
  	genericControl.C
 	geometricControl.C
 	gridColorWidget.C
-	helpViewer.C
 	logView.C
 	molecularControl.C
 	molecularStructure.C
@@ -31,10 +30,6 @@ IF(BALL_HAS_QTWEBENGINE)
 		HTMLPage.C
 		HTMLView.C
 	)
-ENDIF()
-
-IF(BALL_PYTHON_SUPPORT)
-	SET(SOURCES_LIST ${SOURCES_LIST} pyWidget.C hotkeyTable.C)
 ENDIF()
 
 ADD_VIEW_SOURCES("VIEW/WIDGETS" "${SOURCES_LIST}")
