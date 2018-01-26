@@ -25,7 +25,11 @@
 #include <BALL/VIEW/PRIMITIVES/mesh.h>
 #include <BALL/VIEW/PRIMITIVES/multiLine.h>
 
-#include <GL/gl.h>
+#ifdef BALL_OS_DARWIN
+#	include <OpenGL/gl.h>
+#else
+#	include <GL/gl.h>
+#endif
 
 using std::endl;
 
